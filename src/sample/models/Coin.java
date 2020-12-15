@@ -14,4 +14,5 @@ public class Coin extends GameObject {
     public int getCoinId() {
         return coinId;
     }
+
 }

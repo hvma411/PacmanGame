@@ -26,6 +26,10 @@ public class Graphics {
         gc.setFill(player.getColor());
         gc.fillOval(player.getX(), player.getY(), player.getWidth(), player.getHeight());
 
+        Monster monster = model.getMonster();
+        gc.setFill(monster.getColor());
+        gc.fillOval(monster.getX(), monster.getY(), monster.getWidth(), monster.getHeight());
+
         for (GameObject wall : model.getWall()) {
             gc.setFill(wall.getColor());
             gc.fillRect(wall.getX(), wall.getY(), wall.getWidth(), wall.getHeight());

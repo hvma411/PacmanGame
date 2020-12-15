@@ -3,6 +3,8 @@ package sample;
 import sample.models.Model;
 import javafx.animation.AnimationTimer;
 
+import java.io.IOException;
+
 public class Timer extends AnimationTimer {
 
     private Model model;
@@ -24,7 +26,13 @@ public class Timer extends AnimationTimer {
         if (lastMillis != -1) {
             deltaMillis = millis - lastMillis;
         }
-        this.model.update(deltaMillis);
+        try {
+            this.model.update(deltaMillis);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         lastMillis = millis;
 

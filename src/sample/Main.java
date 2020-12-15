@@ -18,9 +18,12 @@ import java.util.ArrayList;
 
 public class Main extends Application {
 
+    public static Stage primaryStage;
+
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        Main.primaryStage = primaryStage;
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         primaryStage.setTitle("Pacman 2.0");
 

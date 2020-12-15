@@ -27,10 +27,8 @@ import java.io.IOException;
 
 public class Controller {
 
-    // CHANGE NAME OF THE GAME TO EGG COLLECTOR
-
-    private static final double WIDTH = 1200;
-    private static final double HEIGHT = 750;
+    private static final double WIDTH = 600;
+    private static final double HEIGHT = 600;
 
     @FXML
     private Button exitBtn ;
@@ -43,24 +41,18 @@ public class Controller {
     @FXML
     private Button startGameBtn;
     @FXML
-    private TextField nameInput;
+    public static TextField nameInput;
 
-    private double newY, newX = 0;
+    public static String userName;
 
     private Object KeyEvent;
 
-    private int pacmanSpeed = 5;
-
     Canvas canvas = new Canvas(WIDTH, HEIGHT);
-
-    Circle pacman = new Circle(25.0f, Color.YELLOW);
 
     public static final int WIDTHH = 600;
     public static final int HEIGHTT = 600;
 
-    private sample.Timer timer;
-
-
+    public static sample.Timer timer;
 
     @FXML
     private void handleButtonClick(ActionEvent event) throws IOException {
@@ -97,12 +89,9 @@ public class Controller {
 
         } else if (event.getSource() == startGameBtn) {
 
+//            userName = nameInput.getText();
+
             Stage newGameStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-//            GraphicsContext gcText = canvas.getGraphicsContext2D();
-//            gcText.setLineWidth(1.0);
-//            gcText.setFill(Color.WHITE);
-//
-//            gcText.strokeText("SCORE:", 60, 60);
 
             Group group = new Group();
             group.getChildren().addAll(canvas);

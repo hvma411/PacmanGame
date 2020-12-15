@@ -1,16 +1,26 @@
 package sample.models;
 
-import java.awt.*;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import sample.Controller;
+import sample.Main;
+import sample.YouWonStageController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class Model {
 
+    int sumOfCoins = 0;
+
     int width;
     int height;
 
-    private Player player = new Player(100, 100);
+    // Creating objects to play with
+
+    private Player player = new Player(120, 120);
+    private Monster monster = new Monster(270, 270, 60, 60);
     private List<Wall> walls = new ArrayList<>();
     private List<Coin> coins = new ArrayList<>();
 
@@ -19,18 +29,20 @@ public class Model {
      *
      * @param width
      * @param height
+     *
      */
+
     public Model(int width, int height) {
         this.width = width;
         this.height = height;
 
         init(width, height);
-        initWalls(100, 200);
+        initWalls();
     }
 
-    public Player getPlayer() {
-        return player;
-    }
+    public Player getPlayer() { return player; }
+
+    public Monster getMonster() { return monster; }
 
     public List<Wall> getWall() {
         return walls;
@@ -43,10 +55,11 @@ public class Model {
     /*
      * Arrangement of objects on the playing field
      */
+
     private void init(int width, int height) {
         Random positionsGenerator = new Random(System.currentTimeMillis());
-        int numberOfCoins = 60;
-        int coinDiameter = 60;
+        int numberOfCoins = 10;
+        int coinDiameter = 10;
         for (int i = 0; i < numberOfCoins; i++) {
             int x = positionsGenerator.nextInt(width - coinDiameter) + coinDiameter / 2;
             int y = positionsGenerator.nextInt(height - coinDiameter) + coinDiameter / 2;
@@ -55,27 +68,44 @@ public class Model {
         }
     }
 
-    private void initWalls(int width, int height) {
-        int numberOfWalls = 16;
-        int heightOfWall = 600;
-        int widthOfWall = 5;
+    // Function that creates the walls in our game;
+    private void initWalls() {
+        int walls = 8;
+        int heightOfWall = 5;
+        int widthOfWall = 600;
+        int widthOfSmallerWall = 500;
         int positionX = 0;
         int positionY = 0;
+        int rightWallsPosX = 300;
+        int rightWallsPosY = 300;
 
-        for (int i = 0; i < numberOfWalls; i++) {
-            if (i % 2 == 0) {
-                Wall wall = new Wall(positionX, positionY, heightOfWall, widthOfWall);
-                this.walls.add(wall);
-                positionY = positionY + 60;
-                positionX = positionX + 30;
+        for (int i = 0; i < walls; i++) {
+            if (positionY <= 250) {
+                Wall horizontal = new Wall(positionX, positionY, widthOfWall, heightOfWall);
+                this.walls.add(horizontal);
 
+                Wall vertical = new Wall(positionX, positionY + 50, heightOfWall, widthOfSmallerWall);
+                this.walls.add(vertical);
 
-            } else if (i % 2 != 0) {
-                Wall wall = new Wall(positionX, positionY + 40, widthOfWall, heightOfWall - 50);
-                this.walls.add(wall);
-                positionX = positionX + 30;
+                positionY = positionY + 50;
+                widthOfWall = widthOfWall - 100;
+                positionX = positionX + 50;
+                widthOfSmallerWall = widthOfSmallerWall - 100;
+
+            } else if (positionY > 250) {
+                Wall horizontal = new Wall(positionX, positionY, widthOfWall, heightOfWall);
+                this.walls.add(horizontal);
+
+                Wall verticalRight = new Wall(rightWallsPosX, rightWallsPosY + 50, heightOfWall, widthOfSmallerWall);
+                this.walls.add(verticalRight);
+
+                positionY = positionY + 50;
+                widthOfWall = widthOfWall + 100;
+                positionX = positionX - 50;
+                rightWallsPosX = rightWallsPosX + 50;
+                rightWallsPosY = rightWallsPosY - 50;
+                widthOfSmallerWall = widthOfSmallerWall + 100;
             }
-
         }
     }
 
@@ -126,22 +156,42 @@ public class Model {
         return false;
     }
 
-    public void update(long deltaMillis) {
+    private boolean monsterCollider(Player player) {
+        return playerObjectCollider(player, monster);
+    }
 
+    public void update(long deltaMillis) throws Exception {
         Coin hitCoin = coinsCollider();
         if (hitCoin != null) {
-            System.out.println("KA-SHING! " + hitCoin.getCoinId());
+            sumOfCoins = sumOfCoins + hitCoin.getCoinId();
             coins.remove(hitCoin);
+        }
+
+        if (sumOfCoins == 55) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/sample/youWonStage.fxml"));
+            Parent gameFinished = loader.load();
+
+            YouWonStageController controller = loader.getController();
+
+            Controller.timer.stop();
+
+            controller.setTextScore(sumOfCoins);
+
+            controller.post(sumOfCoins);
+
+            Main.primaryStage.setScene(new Scene(gameFinished, 600, 600));
         }
     }
 
     public boolean canMove(int x, int y) {
         Player dummyPlayer = new Player(x, y);
         if (wallCollider(dummyPlayer)) {
+            return false;
+        }
 
+        if (monsterCollider(dummyPlayer)) {
             return false;
         }
         return true;
     }
-
 }
